@@ -1,46 +1,66 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home - Amikom Event Hub</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-slate-50 font-sans text-slate-800">
+@extends('app')
 
-    <nav class="bg-indigo-600 shadow-lg">
-        <div class="max-w-6xl mx-auto px-4">
-            <div class="flex justify-between items-center py-4">
-                <div class="text-white font-bold text-xl tracking-wider">
-                    🎉 Amikom<span class="text-indigo-200">EventHub</span>
-                </div>
-                <div class="flex space-x-2">
-                    <a href="/" class="bg-indigo-800 text-white px-4 py-2 rounded-md font-medium transition">Home</a>
-                    <a href="/profil" class="text-indigo-100 hover:bg-indigo-500 hover:text-white px-4 py-2 rounded-md font-medium transition">Profil</a>
-                    <a href="/katalog" class="text-indigo-100 hover:bg-indigo-500 hover:text-white px-4 py-2 rounded-md font-medium transition">Katalog</a>
-                    <a href="/bantuan" class="text-indigo-100 hover:bg-indigo-500 hover:text-white px-4 py-2 rounded-md font-medium transition">Bantuan</a>
-                    <a href="/kontak" class="text-indigo-100 hover:bg-indigo-500 hover:text-white px-4 py-2 rounded-md font-medium transition">Kontak</a>
-                </div>
-            </div>
-        </div>
-    </nav>
+@section('content')
 
-    <main class="max-w-4xl mx-auto mt-12 p-6">
-        <div class="bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden">
-            <div class="bg-gradient-to-r from-indigo-500 to-purple-600 p-10 text-center">
-                <h1 class="text-4xl font-extrabold text-white mb-2">Selamat Datang di Event Hub!</h1>
-                <p class="text-indigo-100 text-lg">Pusat Informasi Event & Kegiatan Mahasiswa</p>
-            </div>
+    <section class="max-w-7xl mx-auto px-6 py-20 flex flex-col md:flex-row items-center gap-12">
+        <div class="flex-1 space-y-8">
+            <span class="inline-block px-4 py-1.5 bg-indigo-100 text-indigo-700 rounded-full text-sm font-bold uppercase tracking-wider">#1 Event Platform</span>
+            <h1 class="text-5xl md:text-7xl font-extrabold leading-tight">
+                Temukan & Pesan <span class="text-indigo-600">Tiket Event</span> Impianmu.
+            </h1>
             
-            <div class="p-10 text-center">
-                <div class="inline-block bg-indigo-50 p-6 rounded-xl border border-indigo-100 shadow-sm">
-                    <h2 class="text-sm font-bold text-indigo-400 uppercase tracking-widest mb-4">Data Diri Praktikan</h2>
-                    <p class="text-2xl font-bold text-indigo-900 mb-1">Irawan Nabi Pradipa Kussuma</p>
-                    <p class="text-lg text-slate-600 font-mono bg-white px-4 py-1 rounded-full shadow-inner inline-block mt-2">NIM: 24.62.0212</p>
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-2 max-w-md">
+                <h2 class="font-bold text-indigo-600 uppercase text-xs tracking-widest">Data Praktikan</h2>
+                <p class="text-lg">Nama: <span class="font-bold">Irawan Nabi Pradipa Kussuma</span></p>
+                <p class="text-lg">NIM: <span class="font-bold">24.62.0212</span></p>
+            </div>
+
+            <div class="flex gap-4">
+                <a href="#events" class="px-8 py-4 bg-indigo-600 text-white rounded-2xl font-bold text-lg shadow-xl shadow-indigo-200 hover:scale-105 transition-transform">Mulai Jelajah</a>
+            </div>
+        </div>
+
+        <div class="flex-1 relative">
+            <img src="https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Concert" class="rounded-[2rem] shadow-2xl relative z-10 w-full object-cover aspect-[4/5] object-center">
+            <div class="absolute -bottom-6 -left-6 glass p-6 rounded-2xl shadow-xl z-20 border border-white">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-green-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                    <div>
+                        <p class="text-xs text-slate-500 font-bold uppercase">Terverifikasi</p>
+                        <p class="font-bold">Pembayaran Aman via Midtrans</p>
+                    </div>
                 </div>
             </div>
         </div>
-    </main>
+    </section>
 
-</body>
-</html>
+    <section id="events" class="max-w-7xl mx-auto px-6 py-20">
+        <div class="flex justify-between items-end mb-12">
+            <div>
+                <h2 class="text-3xl font-extrabold mb-2">Event Terdekat</h2>
+                <p class="text-slate-500 font-medium">Jangan sampai ketinggalan acara seru minggu ini!</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="group bg-white rounded-3xl border border-slate-100 shadow-sm hover:shadow-2xl transition-all duration-300 overflow-hidden">
+                <div class="relative overflow-hidden aspect-[3/4]">
+                    <img src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-bold mb-2 group-hover:text-indigo-600 transition">Jazz Night 2024</h3>
+                    <div class="flex items-center gap-2 text-slate-500 text-sm mb-4">
+                        <span>16 November 2024</span>
+                    </div>
+                    <div class="flex justify-between items-center pt-4 border-t">
+                        <span class="text-2xl font-black text-indigo-600">Rp 150rb</span>
+                        <button class="px-5 py-2 bg-indigo-50 text-indigo-600 rounded-xl font-bold hover:bg-indigo-600 hover:text-white transition">Detail</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+@endsection

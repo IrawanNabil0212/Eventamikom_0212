@@ -1,56 +1,32 @@
 <!DOCTYPE html>
-<html lang="id">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profil - Amikom Event Hub</title>
+    <title>Profil Praktikan</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-50 font-sans text-slate-800">
+<body class="bg-gray-100 font-sans">
 
-    <nav class="bg-indigo-600 shadow-lg">
-        <div class="max-w-6xl mx-auto px-4">
-            <div class="flex justify-between items-center py-4">
-                <div class="text-white font-bold text-xl tracking-wider">
-                    🎉 Amikom<span class="text-indigo-200">EventHub</span>
-                </div>
-                <div class="flex space-x-2">
-                    <a href="/" class="text-indigo-100 hover:bg-indigo-500 hover:text-white px-4 py-2 rounded-md font-medium transition">Home</a>
-                    <a href="/profil" class="bg-indigo-800 text-white px-4 py-2 rounded-md font-medium transition">Profil</a>
-                    <a href="/katalog" class="text-indigo-100 hover:bg-indigo-500 hover:text-white px-4 py-2 rounded-md font-medium transition">Katalog</a>
-                    <a href="/bantuan" class="text-indigo-100 hover:bg-indigo-500 hover:text-white px-4 py-2 rounded-md font-medium transition">Bantuan</a>
-                    <a href="/kontak" class="text-indigo-100 hover:bg-indigo-500 hover:text-white px-4 py-2 rounded-md font-medium transition">Kontak</a>
-                </div>
+    <nav class="bg-blue-600 p-4 shadow-md">
+        <div class="max-w-4xl mx-auto flex justify-between items-center text-white">
+            <div class="font-bold text-xl">EventHub</div>
+            <div class="space-x-4">
+                <a href="/" class="hover:text-blue-200">Home</a>
+                <a href="/profil" class="font-semibold underline">Profil</a>
+                <a href="/katalog" class="hover:text-blue-200">Katalog</a>
+                <a href="/bantuan" class="hover:text-blue-200">Bantuan</a>
+                <a href="/kontak" class="hover:text-blue-200">Kontak</a>
             </div>
         </div>
     </nav>
 
-    <main class="max-w-2xl mx-auto mt-12 p-6">
-        <div class="bg-white p-10 rounded-2xl shadow-xl border border-slate-100 text-center relative overflow-hidden">
-            <div class="absolute top-0 left-0 w-full h-32 bg-indigo-100"></div>
-            
-            <div class="relative z-10 flex flex-col items-center mt-8">
-                <div class="w-32 h-32 bg-white rounded-full flex items-center justify-center shadow-lg border-4 border-indigo-500 mb-6 text-6xl">
-                    👨‍💻
-                </div>
-                <h1 class="text-3xl font-extrabold text-slate-800 mb-2">Irawan Nabi Pradipa Kussuma</h1>
-                <span class="bg-indigo-100 text-indigo-700 px-4 py-1 rounded-full text-sm font-bold uppercase tracking-wider mb-4">Web Developer</span>
-                
-                <div class="w-full border-t border-slate-200 my-4"></div>
-                
-                <div class="grid grid-cols-2 gap-4 w-full text-left">
-                    <div class="bg-slate-50 p-4 rounded-lg">
-                        <p class="text-xs text-slate-400 uppercase font-bold mb-1">NIM</p>
-                        <p class="font-mono text-lg font-semibold text-slate-700">24.62.0212</p>
-                    </div>
-                    <div class="bg-slate-50 p-4 rounded-lg">
-                        <p class="text-xs text-slate-400 uppercase font-bold mb-1">Mata Kuliah</p>
-                        <p class="text-lg font-semibold text-slate-700">Pemrograman Web</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
+    <div class="max-w-4xl mx-auto mt-10 bg-white p-8 rounded-lg shadow text-center">
+        <div class="text-6xl mb-4">👨‍💻</div>
+        <h1 class="text-2xl font-bold text-gray-800">Irawan Nabi Pradipa Kussuma</h1>
+        <p class="text-blue-600 font-semibold mb-4">Web Developer</p>
+        
+        <p class="text-gray-600">NIM: 24.62.0212</p>
+        <p class="text-gray-600">Kelas: Pemrograman Web</p>
+    </div>
 
 </body>
 </html>
