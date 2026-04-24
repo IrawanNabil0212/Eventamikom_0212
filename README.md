@@ -6,8 +6,7 @@ NIM : 24.62.0212
 Tugas Pertemuan 3
 ===Halaman Users===
 Dashboard :
-https://drive.google.com/drive/folders/1v1HlRrseinBid4asTS3GGINghshZ06PZ?usp=sharing
-
+https://eventamikom-0212-main-qg40m8.free.laravel.cloud/
 Halaman Detail :
 https://eventamikom-0212-main-qg40m8.free.laravel.cloud/event/1
 
