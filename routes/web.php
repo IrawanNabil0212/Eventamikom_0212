@@ -18,7 +18,7 @@ use App\Http\Controllers\Admin\EventController as AdminEventController;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/tentang', function () {
-    return view('about'); // Pastikan buat file about.blade.php
+    return view('about');
 })->name('about');
 
 Route::get('/kontak', function () {
