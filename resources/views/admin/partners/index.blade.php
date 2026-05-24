@@ -18,16 +18,11 @@
     </div>
 @endif
 
-{{-- Search --}}
 <form method="GET" action="{{ route('admin.partners.index') }}" class="mb-6">
     <div class="flex gap-3 max-w-md">
-        <input
-            type="text"
-            name="search"
-            value="{{ request('search') }}"
-            placeholder="Cari nama partner..."
-            class="flex-1 px-5 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none text-sm"
-        >
+        <input type="text" name="search" value="{{ request('search') }}"
+               placeholder="Cari nama partner..."
+               class="flex-1 px-5 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none text-sm">
         <button type="submit"
                 class="px-5 py-3 bg-indigo-600 text-white rounded-xl font-bold text-sm hover:bg-indigo-700 transition">
             Cari
@@ -47,7 +42,7 @@
             <tr class="border-b border-slate-100">
                 <th class="text-left text-xs font-black uppercase tracking-widest text-slate-400 px-8 py-5 w-16">No</th>
                 <th class="text-left text-xs font-black uppercase tracking-widest text-slate-400 py-5">Nama Partner</th>
-                <th class="text-left text-xs font-black uppercase tracking-widest text-slate-400 py-5">Logo URL</th>
+                <th class="text-left text-xs font-black uppercase tracking-widest text-slate-400 py-5">Logo</th>
                 <th class="text-left text-xs font-black uppercase tracking-widest text-slate-400 py-5">Dibuat</th>
                 <th class="text-left text-xs font-black uppercase tracking-widest text-slate-400 py-5 pr-8">Aksi</th>
             </tr>
@@ -56,24 +51,21 @@
             @forelse($partners as $index => $partner)
             <tr class="hover:bg-slate-50/60 transition">
                 <td class="px-8 py-5 text-slate-400 font-medium">{{ $index + 1 }}</td>
-                <td class="py-5 font-bold text-slate-800 flex items-center gap-3">
+                <td class="py-5 font-bold text-slate-800">{{ $partner->name }}</td>
+                <td class="py-5">
                     @if($partner->logo_url)
                         <img src="{{ $partner->logo_url }}" alt="{{ $partner->name }}"
-                             class="w-8 h-8 rounded-lg object-contain border border-slate-100"
+                             class="h-8 object-contain rounded border border-slate-100"
                              onerror="this.style.display='none'">
+                    @else
+                        <span class="text-slate-400 text-sm">-</span>
                     @endif
-                    {{ $partner->name }}
                 </td>
-                <td class="py-5 text-slate-400 text-sm max-w-xs truncate">
-                    {{ $partner->logo_url ?? '-' }}
-                </td>
-                <td class="py-5 text-slate-400 text-sm">
-                    {{ $partner->created_at->format('d M Y') }}
-                </td>
+                <td class="py-5 text-slate-400 text-sm">{{ $partner->created_at->format('d M Y') }}</td>
                 <td class="py-5 pr-8">
                     <div class="flex items-center gap-2">
                         <a href="{{ route('admin.partners.edit', $partner) }}"
-                           class="p-2 text-indigo-500 hover:bg-indigo-50 rounded-xl transition" title="Edit">
+                           class="p-2 text-indigo-500 hover:bg-indigo-50 rounded-xl transition">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                             </svg>
@@ -82,7 +74,7 @@
                               onsubmit="return confirm('Hapus partner \'{{ $partner->name }}\'?')">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="p-2 text-red-400 hover:bg-red-50 rounded-xl transition" title="Hapus">
+                            <button type="submit" class="p-2 text-red-400 hover:bg-red-50 rounded-xl transition">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                 </svg>

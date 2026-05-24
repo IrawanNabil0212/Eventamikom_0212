@@ -13,16 +13,16 @@
 </head>
 <body class="bg-slate-50 text-slate-900">
 
-    <nav class="glass sticky top-8 z-40 mx-4 mt-4 px-6 py-4 rounded-2xl border border-white/20 shadow-lg flex justify-between items-center">
-        <div class="flex items-center gap-2">
-            <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-bold text-xl">AH</div>
-            <span class="text-xl font-bold tracking-tight">AmikomEventHub</span>
-        </div>
-        <div class="hidden md:flex gap-8 font-medium">
-            <a href="/" class="text-indigo-600">Jelajahi</a>
-            <a href="#" class="hover:text-indigo-600 transition">Kategori</a>
-            <a href="#" class="hover:text-indigo-600 transition">Tentang Kami</a>
-        </div>
+    <nav class="glass sticky top-0 z-40 px-8 py-4 border-b border-white/20 shadow-sm flex items-center justify-between">
+    <div class="flex items-center gap-2">
+        <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-bold text-xl">AH</div>
+        <span class="text-xl font-bold tracking-tight">AmikomEventHub</span>
+    </div>
+    <div class="hidden md:flex gap-8 font-medium">
+        <a href="{{ route('home') }}" class="text-indigo-600">Jelajahi</a>
+        <a href="{{ route('categories.index') }}" class="hover:text-indigo-600 transition">Kategori</a>
+        <a href="#" class="hover:text-indigo-600 transition">Tentang Kami</a>
+    </div>
     </nav>
 
     <main>

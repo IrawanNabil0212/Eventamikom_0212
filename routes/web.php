@@ -2,67 +2,58 @@
 
 use Illuminate\Support\Facades\Route;
 
-// Import Controller User Area
+// ===== User Area Controllers =====
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\EventController; 
+use App\Http\Controllers\EventController;
 
-use App\Http\Controllers\Admin\DashboardController; 
-use App\Http\Controllers\Admin\EventController as AdminEventController; 
+// ===== Admin Area Controllers =====
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\EventController as AdminEventController;
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\PartnerController;
 
 /*
 |--------------------------------------------------------------------------
-| Rute Halaman Statis / Publik
+| Rute Publik / User
 |--------------------------------------------------------------------------
 */
 
+// Homepage
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
-Route::get('/tentang', function () {
-    return view('about');
-})->name('about');
+// Halaman Statis
+Route::get('/tentang', fn() => view('about'))->name('about');
+Route::get('/kontak', fn() => view('contact'))->name('contact');
+Route::get('/profil', fn() => view('profil'))->name('profil');
+Route::get('/katalog', fn() => view('katalog'))->name('katalog');
+Route::get('/bantuan', fn() => view('bantuan'))->name('help');
 
-Route::get('/kontak', function () {
-    return view('contact');
-})->name('contact');
-
-Route::get('/profil', function () {
-    return view('profil');
-})->name('profil');
-
-Route::get('/katalog', function () {
-    return view('katalog');
-})->name('katalog');
-
-Route::get('/bantuan', function () {
-    return view('bantuan');
-})->name('help');
-
-/*
-|--------------------------------------------------------------------------
-| Route Area User (Event & Transaksi)
-|--------------------------------------------------------------------------
-*/
-
+// Event
 Route::get('/event/{id}', [EventController::class, 'show'])->name('events.show');
-Route::get('/my-ticket', [EventController::class, 'ticket']);
-Route::get('/checkout', [EventController::class, 'checkout']);
+Route::get('/my-ticket', [EventController::class, 'ticket'])->name('tickets.my');
+Route::get('/checkout', [EventController::class, 'checkout'])->name('checkout');
+
+// Kategori Publik
+Route::get('/kategori', [HomeController::class, 'categories'])->name('categories.index');
+Route::get('/kategori/{slug}', [HomeController::class, 'category'])->name('category.show');
+
 /*
 |--------------------------------------------------------------------------
-| Route Area Admin (Grup dengan Prefix 'admin')
+| Rute Admin
 |--------------------------------------------------------------------------
 */
 
 Route::prefix('admin')->name('admin.')->group(function () {
-    
-    // URL: /admin/dashboard -> name: admin.dashboard
+
+    // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    
-    // URL: /admin/events -> name: admin.events
-    Route::get('/events', [AdminEventController::class, 'index'])->name('events');
-    
-    // URL: /admin/transactions -> name: admin.transactions
-    Route::get('/transactions', function () {
-        return view('admin.transactions');
-    })->name('transactions');
+
+    // Transaksi (placeholder)
+    Route::get('/transactions', fn() => view('admin.transactions'))->name('transactions');
+
+    // CRUD Resources
+    Route::resource('events', AdminEventController::class);
+    Route::resource('categories', CategoryController::class);
+    Route::resource('partners', PartnerController::class);
 
 });

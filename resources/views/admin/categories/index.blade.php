@@ -1,14 +1,14 @@
-@extends('layouts.admin', ['title' => 'Kelola Partner'])
+@extends('layouts.admin', ['title' => 'Kelola Kategori'])
 
 @section('content')
 <header class="mb-10 flex items-start justify-between">
     <div>
-        <h1 class="text-3xl font-black text-slate-800">Kelola Partner</h1>
-        <p class="text-slate-500 font-medium">Atur mitra yang mendukung platform AmikomEventHub.</p>
+        <h1 class="text-3xl font-black text-slate-800">Kelola Kategori</h1>
+        <p class="text-slate-500 font-medium">Atur kategori event yang tersedia di platform.</p>
     </div>
-    <a href="{{ route('admin.partners.create') }}"
+    <a href="{{ route('admin.categories.create') }}"
        class="px-6 py-3 bg-indigo-600 text-white rounded-2xl font-bold shadow-lg shadow-indigo-100 hover:bg-indigo-700 transition">
-        + Tambah Partner
+        + Tambah Kategori
     </a>
 </header>
 
@@ -19,13 +19,13 @@
 @endif
 
 {{-- Search --}}
-<form method="GET" action="{{ route('admin.partners.index') }}" class="mb-6">
+<form method="GET" action="{{ route('admin.categories.index') }}" class="mb-6">
     <div class="flex gap-3 max-w-md">
         <input
             type="text"
             name="search"
             value="{{ request('search') }}"
-            placeholder="Cari nama partner..."
+            placeholder="Cari nama kategori..."
             class="flex-1 px-5 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none text-sm"
         >
         <button type="submit"
@@ -33,7 +33,7 @@
             Cari
         </button>
         @if(request('search'))
-            <a href="{{ route('admin.partners.index') }}"
+            <a href="{{ route('admin.categories.index') }}"
                class="px-5 py-3 border border-slate-200 text-slate-500 rounded-xl font-bold text-sm hover:bg-slate-50 transition">
                 Reset
             </a>
@@ -46,40 +46,35 @@
         <thead>
             <tr class="border-b border-slate-100">
                 <th class="text-left text-xs font-black uppercase tracking-widest text-slate-400 px-8 py-5 w-16">No</th>
-                <th class="text-left text-xs font-black uppercase tracking-widest text-slate-400 py-5">Nama Partner</th>
-                <th class="text-left text-xs font-black uppercase tracking-widest text-slate-400 py-5">Logo URL</th>
+                <th class="text-left text-xs font-black uppercase tracking-widest text-slate-400 py-5">Nama Kategori</th>
+                <th class="text-left text-xs font-black uppercase tracking-widest text-slate-400 py-5">Slug</th>
+                <th class="text-left text-xs font-black uppercase tracking-widest text-slate-400 py-5">Jumlah Event</th>
                 <th class="text-left text-xs font-black uppercase tracking-widest text-slate-400 py-5">Dibuat</th>
                 <th class="text-left text-xs font-black uppercase tracking-widest text-slate-400 py-5 pr-8">Aksi</th>
             </tr>
         </thead>
         <tbody class="divide-y divide-slate-50">
-            @forelse($partners as $index => $partner)
+            @forelse($categories as $index => $category)
             <tr class="hover:bg-slate-50/60 transition">
                 <td class="px-8 py-5 text-slate-400 font-medium">{{ $index + 1 }}</td>
-                <td class="py-5 font-bold text-slate-800 flex items-center gap-3">
-                    @if($partner->logo_url)
-                        <img src="{{ $partner->logo_url }}" alt="{{ $partner->name }}"
-                             class="w-8 h-8 rounded-lg object-contain border border-slate-100"
-                             onerror="this.style.display='none'">
-                    @endif
-                    {{ $partner->name }}
+                <td class="py-5 font-bold text-slate-800">{{ $category->name }}</td>
+                <td class="py-5">
+                    <span class="px-3 py-1 bg-slate-100 text-slate-500 rounded-lg text-xs font-mono">{{ $category->slug }}</span>
                 </td>
-                <td class="py-5 text-slate-400 text-sm max-w-xs truncate">
-                    {{ $partner->logo_url ?? '-' }}
+                <td class="py-5">
+                    <span class="px-3 py-1 bg-indigo-50 text-indigo-600 rounded-full text-sm font-bold">{{ $category->events_count }} event</span>
                 </td>
-                <td class="py-5 text-slate-400 text-sm">
-                    {{ $partner->created_at->format('d M Y') }}
-                </td>
+                <td class="py-5 text-slate-400 text-sm">{{ $category->created_at->format('d M Y') }}</td>
                 <td class="py-5 pr-8">
                     <div class="flex items-center gap-2">
-                        <a href="{{ route('admin.partners.edit', $partner) }}"
+                        <a href="{{ route('admin.categories.edit', $category) }}"
                            class="p-2 text-indigo-500 hover:bg-indigo-50 rounded-xl transition" title="Edit">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                             </svg>
                         </a>
-                        <form action="{{ route('admin.partners.destroy', $partner) }}" method="POST" class="inline"
-                              onsubmit="return confirm('Hapus partner \'{{ $partner->name }}\'?')">
+                        <form action="{{ route('admin.categories.destroy', $category) }}" method="POST" class="inline"
+                              onsubmit="return confirm('Hapus kategori \'{{ $category->name }}\'?')">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="p-2 text-red-400 hover:bg-red-50 rounded-xl transition" title="Hapus">
@@ -93,18 +88,18 @@
             </tr>
             @empty
             <tr>
-                <td colspan="5" class="text-center py-16 text-slate-400">
+                <td colspan="6" class="text-center py-16 text-slate-400">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 mx-auto mb-3 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
                     </svg>
                     <p class="font-semibold">
                         @if(request('search'))
-                            Tidak ada partner dengan nama "{{ request('search') }}".
+                            Tidak ada kategori dengan nama "{{ request('search') }}".
                         @else
-                            Belum ada partner.
+                            Belum ada kategori.
                         @endif
                     </p>
-                    <a href="{{ route('admin.partners.create') }}" class="text-indigo-500 hover:underline text-sm">Tambah sekarang →</a>
+                    <a href="{{ route('admin.categories.create') }}" class="text-indigo-500 hover:underline text-sm">Tambah sekarang →</a>
                 </td>
             </tr>
             @endforelse
