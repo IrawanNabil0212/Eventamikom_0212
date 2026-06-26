@@ -51,6 +51,9 @@ Route::get('/my-ticket', [EventController::class, 'ticket'])->name('tickets.my')
 Route::get('/checkout/{event}', [CheckoutController::class, 'create'])->name('checkout.create');
 Route::post('/checkout/{event}', [CheckoutController::class, 'store'])->name('checkout.store');
 
+//Payment
+Route::get('/payment/success/{order_id}', [CheckoutController::class, 'success'])->name('checkout.success');
+Route::get('/payment/{order_id}', [CheckoutController::class, 'payment'])->name('checkout.payment');
 // Kategori Publik
 Route::get('/kategori', [HomeController::class, 'categories'])->name('categories.index');
 Route::get('/kategori/{slug}', [HomeController::class, 'category'])->name('category.show');
