@@ -29,3 +29,11 @@ https://eventamikom-0212-main-qg40m8.free.laravel.cloud/admin/transactions
 Tugas Pertemuan 4
 BUKTI DB P 4 :
 https://drive.google.com/drive/folders/1v1HlRrseinBid4asTS3GGINghshZ06PZ?usp=sharing
+
+Praktikum 8
+https://eventamikom0212-production.up.railway.app/admin/login
+Praktikum 9
+
+Praktikum 10
+
+Praktikum 11
