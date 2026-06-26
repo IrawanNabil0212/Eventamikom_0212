@@ -32,8 +32,15 @@ https://drive.google.com/drive/folders/1v1HlRrseinBid4asTS3GGINghshZ06PZ?usp=sha
 
 Praktikum 8
 https://eventamikom0212-production.up.railway.app/admin/login
+
 Praktikum 9
+https://eventamikom0212-production.up.railway.app/admin/events
 
 Praktikum 10
+https://eventamikom0212-production.up.railway.app/admin/transactions
 
 Praktikum 11
+https://eventamikom0212-production.up.railway.app/payment/TRX-1782491014-JIurf
+
+Bukti Praktikum:
+https://drive.google.com/drive/folders/1cYH2ouwJa5IOMfG08kicIoW3egi2GagB?usp=sharing
