@@ -40,7 +40,11 @@ Praktikum 10
 https://eventamikom0212-production.up.railway.app/admin/transactions
 
 Praktikum 11
-https://eventamikom0212-production.up.railway.app/payment/TRX-1782491014-JIurf
+https://eventamikom0212-production.up.railway.app/payment/TRX-1783069742-0iG6J
+
+Praktikum 12
+https://eventamikom0212-production.up.railway.app/payment/TRX-1783069742-0iG6J
+https://eventamikom0212-production.up.railway.app/admin/transactions
 
 Bukti Praktikum:
 https://drive.google.com/drive/folders/1cYH2ouwJa5IOMfG08kicIoW3egi2GagB?usp=sharing
