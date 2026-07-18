@@ -14,7 +14,7 @@ use App\Http\Controllers\Admin\EventController as AdminEventController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\PartnerController;
 use App\Http\Controllers\Admin\TransactionController;
-
+use App\Http\Controllers\BuyerAuthController;
 /*
 |--------------------------------------------------------------------------
 | Satpam Pengarah Rute (Fallback Middleware Auth)
@@ -58,6 +58,15 @@ Route::get('/payment/{order_id}', [CheckoutController::class, 'payment'])->name(
 Route::get('/kategori', [HomeController::class, 'categories'])->name('categories.index');
 Route::get('/kategori/{slug}', [HomeController::class, 'category'])->name('category.show');
 
+// Login Instan via Google (SSO) - untuk Buyer
+Route::get('/auth/google/redirect', [BuyerAuthController::class, 'redirectToGoogle'])
+    ->name('buyer.google.redirect');
+ 
+Route::get('/auth/google/callback', [BuyerAuthController::class, 'handleGoogleCallback'])
+    ->name('buyer.google.callback');
+ 
+Route::post('/logout', [BuyerAuthController::class, 'logout'])
+    ->name('buyer.logout');
 
 /*
 |--------------------------------------------------------------------------

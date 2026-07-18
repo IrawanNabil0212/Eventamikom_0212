@@ -1,4 +1,4 @@
- @extends('layouts.app')
+@extends('layouts.app')
  @section('title', 'Checkout - ' . $event->title)
  @section('content')
  <main class="max-w-3xl mx-auto px-6 py-20">
@@ -30,7 +30,8 @@
                      alt="Event" class="w-24 h-24 rounded-2xl object-cover">
                  <div>
                      <h4 class="font-extrabold text-lg">{{ $event->title }}</h4>
-<p class="text-slate-500">{{ \Carbon\Carbon::parse($event->date)->format('d M Y') }} • {{ $event->location }}</p>                     <p class="text-indigo-600 font-bold mt-2">1 x Rp {{ number_format($event->price, 0, ',', '.') }}</p>
+                     <p class="text-slate-500">{{ \Carbon\Carbon::parse($event->date)->format('d M Y') }} • {{ $event->location }}</p>
+                     <p class="text-indigo-600 font-bold mt-2">1 x Rp {{ number_format($event->price, 0, ',', '.') }}</p>
                  </div>
              </div>
              <div class="mt-8 pt-6 border-t space-y-3">
@@ -49,10 +50,30 @@
              </div>
          </div>
 
+         <!--
+             Info Akun (SSO)
+             Halaman ini hanya bisa diakses kalau user SUDAH login
+             (dijamin oleh guard di CheckoutController::create()),
+             jadi @guest di sini murni jaga-jaga saja.
+         -->
+         <div class="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm flex items-center justify-between">
+             <div class="flex items-center gap-3">
+                 <img src="{{ auth()->user()->avatar ?? 'https://ui-avatars.com/api/?name='.urlencode(auth()->user()->name) }}"
+                      alt="avatar" class="w-10 h-10 rounded-full border">
+                 <div>
+                     <p class="text-sm text-slate-400 font-bold uppercase tracking-wide">Masuk sebagai</p>
+                     <p class="font-bold">{{ auth()->user()->name }}</p>
+                 </div>
+             </div>
+             <form method="POST" action="{{ route('buyer.logout') }}">
+                 @csrf
+                 <button type="submit" class="text-sm text-red-600 hover:underline font-medium">Bukan Anda? Logout</button>
+             </form>
+         </div>
+
          <!-- Form Card -->
          <div class="bg-white rounded-3xl border border-slate-200 p-8 shadow-sm">
-             <h3 class="text-xl font-bold mb-6 italic text-indigo-600 underline underline-offset-8">📦 Data Pemesan
-                 (Tanpa Login)</h3>
+             <h3 class="text-xl font-bold mb-6 italic text-indigo-600 underline underline-offset-8">📦 Data Pemesan</h3>
              <form action="{{ route('checkout.store', $event->id) }}" method="POST" class="space-y-6">
                  @csrf
                  <div>
@@ -60,7 +81,7 @@
                          Lengkap</label>
                      <input type="text" name="customer_name" placeholder="Masukkan nama sesuai identitas"
                          class="w-full px-5 py-4 bg-white border-2 border-slate-100 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition font-medium"
-                         required value="{{ old('customer_name') }}">
+                         required value="{{ old('customer_name', auth()->user()->name) }}">
                  </div>
                  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                      <div>
@@ -68,7 +89,7 @@
                              Aktif</label>
                          <input type="email" name="customer_email" placeholder="contoh@gmail.com"
                              class="w-full px-5 py-4 bg-white border-2 border-slate-100 rounded-2xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 outline-none transition font-medium"
-                             required value="{{ old('customer_email') }}">
+                             required value="{{ old('customer_email', auth()->user()->email) }}">
                          <p class="text-[10px] text-slate-400 mt-2 font-bold uppercase tracking-tighter">*E-Ticket
                              akan dikirim ke email ini</p>
                      </div>
