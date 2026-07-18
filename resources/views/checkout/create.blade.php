@@ -50,12 +50,11 @@
              </div>
          </div>
 
-         <!--
+         {{--
              Info Akun (SSO)
              Halaman ini hanya bisa diakses kalau user SUDAH login
-             (dijamin oleh guard di CheckoutController::create()),
-             jadi @guest di sini murni jaga-jaga saja.
-         -->
+             (dijamin oleh guard di CheckoutController::create()).
+         --}}
          <div class="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm flex items-center justify-between">
              <div class="flex items-center gap-3">
                  <img src="{{ auth()->user()->avatar ?? 'https://ui-avatars.com/api/?name='.urlencode(auth()->user()->name) }}"
