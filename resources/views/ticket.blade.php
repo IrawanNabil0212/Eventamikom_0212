@@ -1,65 +1,110 @@
 @extends('layouts.app')
-
 @section('content')
-<div class="bg-indigo-600 text-white min-h-[80vh] flex items-center justify-center p-6 rounded-3xl my-8">
-    <div class="max-w-md w-full">
-        <div class="text-center mb-8">
-            <div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-white">
-                <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
-                </svg>
-            </div>
-            <h1 class="text-3xl font-black">Pembayaran Berhasil!</h1>
-            <p class="text-indigo-100 mt-2">Tiket Anda telah terbit dan siap digunakan.</p>
-        </div>
-
-        <div class="bg-white text-slate-900 rounded-[2.5rem] overflow-hidden shadow-2xl relative">
-            <div class="p-8 bg-indigo-50 border-b-4 border-dashed border-indigo-100 text-center relative">
-                <p class="text-indigo-600 font-bold uppercase tracking-widest text-xs mb-2">E-Ticket Resmi</p>
-                <h2 class="text-2xl font-black leading-tight">Jazz Night 2024: A Celebration</h2>
-
-                <div class="absolute -left-4 -bottom-4 w-8 h-8 bg-indigo-600 rounded-full"></div>
-                <div class="absolute -right-4 -bottom-4 w-8 h-8 bg-indigo-600 rounded-full"></div>
-            </div>
-
-            <div class="p-8 space-y-8">
-                <div class="grid grid-cols-2 gap-6">
-                    <div>
-                        <p class="text-slate-400 text-xs font-bold uppercase mb-1">Nama Pembeli</p>
-                        <p class="font-bold text-lg">Donni Prabowo</p>
-                    </div>
-                    <div>
-                        <p class="text-slate-400 text-xs font-bold uppercase mb-1">Tanggal & Waktu</p>
-                        <p class="font-bold text-lg">16 Nov, 19:30</p>
-                    </div>
-                    <div>
-                        <p class="text-slate-400 text-xs font-bold uppercase mb-1">Order ID</p>
-                        <p class="font-bold">TRX-99210</p>
-                    </div>
-                    <div>
-                        <p class="text-slate-400 text-xs font-bold uppercase mb-1">Lokasi</p>
-                        <p class="font-bold">Blue Note Lounge</p>
-                    </div>
-                </div>
-
-                <div class="bg-slate-100 p-6 rounded-3xl flex flex-col items-center">
-                    <p class="text-slate-400 text-xs font-bold uppercase mb-4">Scan QR untuk Check-in</p>
-                    <div class="w-48 h-48 bg-white p-4 rounded-xl shadow-inner flex items-center justify-center">
-                        <div class="w-full h-full border-4 border-slate-900 flex flex-wrap p-1">
-                            <div class="w-1/4 h-1/4 bg-slate-900"></div><div class="w-1/4 h-1/4 bg-white"></div><div class="w-1/4 h-1/4 bg-slate-900"></div><div class="w-1/4 h-1/4 bg-white"></div><div class="w-1/4 h-1/4 bg-white"></div><div class="w-1/4 h-1/4 bg-slate-900"></div><div class="w-1/4 h-1/4 bg-white"></div><div class="w-1/4 h-1/4 bg-slate-900"></div><div class="w-1/4 h-1/4 bg-slate-900"></div><div class="w-1/4 h-1/4 bg-white"></div><div class="w-1/4 h-1/4 bg-slate-900"></div><div class="w-1/4 h-1/4 bg-white"></div><div class="w-1/4 h-1/4 bg-white"></div><div class="w-1/4 h-1/4 bg-slate-900"></div><div class="w-1/4 h-1/4 bg-white"></div><div class="w-1/4 h-1/4 bg-slate-900"></div>
-                        </div>
-                    </div>
-                    <p class="mt-4 font-mono font-bold text-slate-800">TKT-001293848</p>
-                </div>
-            </div>
-
-            <div class="px-8 pb-8">
-                <button onclick="window.print()" class="w-full py-4 bg-indigo-600 text-white rounded-2xl font-bold shadow-lg hover:bg-indigo-700 transition">
-                    Cetak / Simpan PDF
-                </button>
-                <a href="{{ url('/') }}" class="block text-center mt-4 text-slate-500 font-bold hover:text-indigo-600">Kembali ke Beranda</a>
-            </div>
-        </div>
+<main class="max-w-4xl mx-auto px-6 py-16">
+    <div class="mb-10">
+        <h1 class="text-4xl font-extrabold">Tiket Saya</h1>
+        <p class="text-slate-500 mt-2">Daftar tiket yang pernah Anda beli.</p>
     </div>
-</div>
+
+    @if(session('success'))
+    <div class="mb-6 p-4 bg-green-100 text-green-700 rounded-xl font-bold">{{ session('success') }}</div>
+    @endif
+    @if(session('error'))
+    <div class="mb-6 p-4 bg-red-100 text-red-700 rounded-xl font-bold">{{ session('error') }}</div>
+    @endif
+
+    <div class="space-y-6">
+        @forelse($transactions as $transaction)
+        <div class="bg-white rounded-3xl border border-slate-200 p-6">
+            <div class="flex flex-col md:flex-row justify-between md:items-center gap-4">
+                <div>
+                    <h3 class="font-extrabold text-lg">{{ $transaction->event->title ?? 'Event tidak ditemukan' }}</h3>
+                    @if($transaction->event)
+                    <p class="text-slate-500 text-sm">
+                        {{ \Carbon\Carbon::parse($transaction->event->date)->translatedFormat('d F Y') }}
+                        • {{ $transaction->event->location }}
+                    </p>
+                    @endif
+                    <p class="text-xs text-slate-400 mt-1">Order ID: {{ $transaction->order_id }}</p>
+                </div>
+                <span class="inline-block px-4 py-1.5 rounded-full text-xs font-bold w-fit
+                    {{ $transaction->status === 'success' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700' }}">
+                    {{ $transaction->status === 'success' ? 'Lunas' : ucfirst($transaction->status) }}
+                </span>
+            </div>
+
+            {{-- Kalau sudah pernah review, tampilkan review-nya --}}
+            @if($transaction->review)
+            <div class="mt-5 pt-5 border-t border-slate-100">
+                <p class="text-sm font-bold text-slate-700 mb-1">Ulasan Anda:</p>
+                <div class="flex gap-1 mb-2">
+                    @for($i = 1; $i <= 5; $i++)
+                        <span class="{{ $i <= $transaction->review->rating ? 'text-yellow-400' : 'text-slate-200' }}">★</span>
+                    @endfor
+                </div>
+                @if($transaction->review->comment)
+                <p class="text-slate-600 text-sm italic">"{{ $transaction->review->comment }}"</p>
+                @endif
+            </div>
+
+            {{-- Kalau eligible tapi belum review, tampilkan form --}}
+            @elseif($transaction->is_reviewable)
+            <div class="mt-5 pt-5 border-t border-slate-100">
+                <p class="text-sm font-bold text-slate-700 mb-3">Bagaimana pengalaman Anda di acara ini?</p>
+                <form action="{{ route('reviews.store', $transaction->id) }}" method="POST">
+                    @csrf
+                    <div class="flex gap-1 mb-3" id="star-rating-{{ $transaction->id }}">
+                        @for($i = 1; $i <= 5; $i++)
+                        <label class="cursor-pointer text-2xl text-slate-300 star-label" data-value="{{ $i }}">
+                            <input type="radio" name="rating" value="{{ $i }}" class="hidden star-input" required>
+                            ★
+                        </label>
+                        @endfor
+                    </div>
+                    <textarea name="comment" rows="2" placeholder="Ceritakan pengalaman Anda (opsional)"
+                        class="w-full px-4 py-3 border-2 border-slate-100 rounded-xl focus:border-indigo-600 outline-none mb-3"></textarea>
+                    <button type="submit" class="px-6 py-2.5 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition">
+                        Kirim Ulasan
+                    </button>
+                </form>
+            </div>
+
+            {{-- Kalau belum eligible (event belum lewat H+1) --}}
+            @elseif($transaction->status === 'success' && $transaction->event)
+            <div class="mt-5 pt-5 border-t border-slate-100">
+                <p class="text-xs text-slate-400">
+                    Anda bisa memberi ulasan mulai
+                    {{ \Carbon\Carbon::parse($transaction->event->date)->addMinutes(\App\Models\Review::REVIEW_DELAY_MINUTES)->translatedFormat('d F Y, H:i') }}.
+                </p>
+            </div>
+            @endif
+        </div>
+        @empty
+        <div class="text-center py-20 text-slate-400">
+            Anda belum memiliki tiket. <a href="{{ route('home') }}" class="text-indigo-600 font-bold">Jelajahi event</a>.
+        </div>
+        @endforelse
+    </div>
+
+    <div class="mt-8">
+        {{ $transactions->links() }}
+    </div>
+</main>
+
+{{-- Script kecil untuk highlight bintang saat diklik/hover, murni UX,
+     tidak pakai library tambahan supaya tidak bentrok dengan setup project --}}
+<script>
+document.querySelectorAll('[id^="star-rating-"]').forEach(function (group) {
+    const labels = group.querySelectorAll('.star-label');
+    labels.forEach(function (label) {
+        label.addEventListener('click', function () {
+            const value = parseInt(label.dataset.value);
+            labels.forEach(function (l) {
+                l.classList.toggle('text-yellow-400', parseInt(l.dataset.value) <= value);
+                l.classList.toggle('text-slate-300', parseInt(l.dataset.value) > value);
+            });
+        });
+    });
+});
+</script>
 @endsection

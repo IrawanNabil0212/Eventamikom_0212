@@ -16,14 +16,18 @@ class BuyerAuthController extends Controller
      */
     public function redirectToGoogle(Request $request)
     {
-        // Simpan URL asal (misal halaman checkout event tertentu),
-        // supaya setelah login Google, user diarahkan BALIK ke sana,
-        // bukan ke halaman umum. Disimpan di session sementara.
         if ($request->has('redirect_to')) {
             session(['sso_redirect_to' => $request->query('redirect_to')]);
         }
 
-        return Socialite::driver('google')->redirect();
+        // PENTING: 'prompt' => 'select_account' memaksa Google SELALU
+        // menampilkan halaman pilih akun, meski browser masih ada sesi
+        // Google yang aktif. Tanpa ini, Google akan otomatis pakai akun
+        // terakhir yang dipakai di browser tanpa nanya lagi - bikin user
+        // sulit ganti akun tanpa logout total dari Google dulu.
+        return Socialite::driver('google')
+            ->with(['prompt' => 'select_account'])
+            ->redirect();
     }
 
     /**
@@ -40,37 +44,29 @@ class BuyerAuthController extends Controller
                 ->with('error', 'Login dengan Google gagal, silakan coba lagi.');
         }
 
-        // Cari user berdasarkan google_id ATAU email yang sama.
-        // Kenapa dicek dua-duanya? Supaya kalau user PERNAH daftar manual
-        // pakai email yang sama (kalau ada form lain), akunnya tetap
-        // nyambung ke akun yang sama, bukan bikin duplikat.
         $user = User::where('google_id', $googleUser->getId())
                     ->orWhere('email', $googleUser->getEmail())
                     ->first();
 
         if ($user) {
-            // Sudah pernah ada -> pastikan google_id & avatar ter-update
             $user->update([
                 'google_id' => $googleUser->getId(),
                 'avatar' => $googleUser->getAvatar(),
             ]);
         } else {
-            // Belum ada -> buat akun buyer baru otomatis
             $user = User::create([
                 'name' => $googleUser->getName(),
                 'email' => $googleUser->getEmail(),
                 'google_id' => $googleUser->getId(),
                 'avatar' => $googleUser->getAvatar(),
                 'role' => 'buyer',
-                'password' => null, // buyer via SSO tidak butuh password
+                'password' => null,
             ]);
         }
 
         Auth::login($user, remember: true);
         $request->session()->regenerate();
 
-        // Arahkan balik ke halaman asal (misal checkout event tertentu)
-        // kalau ada, atau ke homepage kalau tidak ada.
         $redirectTo = session()->pull('sso_redirect_to');
 
         return $redirectTo

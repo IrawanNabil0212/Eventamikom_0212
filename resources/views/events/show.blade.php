@@ -36,6 +36,16 @@
                     </a>
                 @endif
                 <h1 class="text-4xl md:text-5xl font-black leading-tight">{{ $event->title }}</h1>
+
+                {{-- Rating ringkas di header - bisa diklik, lompat ke section ulasan --}}
+                @if($reviewCount > 0)
+                <a href="#ulasan-peserta" class="inline-flex items-center gap-2 hover:underline">
+                    <span class="text-yellow-400 text-lg">★</span>
+                    <span class="font-bold">{{ number_format($averageRating, 1) }}</span>
+                    <span class="text-slate-400 text-sm">({{ $reviewCount }} ulasan - lihat semua)</span>
+                </a>
+                @endif
+
                 <div class="flex flex-wrap gap-6 text-slate-500 font-medium">
                     <div class="flex items-center gap-2">
                         <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -51,6 +61,13 @@
                         <span>{{ $event->location }}</span>
                     </div>
                 </div>
+
+                @if($event->organization)
+                <a href="{{ route('organizations.public.show', $event->organization->slug) }}"
+                   class="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-indigo-600 transition">
+                    Diselenggarakan oleh <span class="font-bold">{{ $event->organization->name }}</span>
+                </a>
+                @endif
             </div>
 
             <div class="prose prose-slate max-w-none">
@@ -111,6 +128,42 @@
                         Tiket yang sudah dibeli tidak dapat direfund.
                     </li>
                 </ul>
+            </div>
+
+            {{-- ============================================================
+                 Rating & Review
+                 ============================================================ --}}
+            <div class="space-y-6" id="ulasan-peserta">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-2xl font-bold">Ulasan Pembeli</h3>
+                    @if($reviewCount > 0)
+                    <div class="flex items-center gap-2">
+                        <span class="text-yellow-400 text-2xl">★</span>
+                        <span class="text-xl font-black">{{ number_format($averageRating, 1) }}</span>
+                        <span class="text-slate-400 text-sm">({{ $reviewCount }} ulasan)</span>
+                    </div>
+                    @endif
+                </div>
+
+                <div class="space-y-4">
+                    @forelse($reviews as $review)
+                    <div class="bg-white rounded-2xl border border-slate-100 p-5">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="font-bold">{{ $review->user->name ?? 'Pengguna' }}</span>
+                            <div class="flex gap-0.5">
+                                @for($i = 1; $i <= 5; $i++)
+                                    <span class="{{ $i <= $review->rating ? 'text-yellow-400' : 'text-slate-200' }}">★</span>
+                                @endfor
+                            </div>
+                        </div>
+                        @if($review->comment)
+                        <p class="text-slate-600 text-sm">{{ $review->comment }}</p>
+                        @endif
+                    </div>
+                    @empty
+                    <p class="text-slate-400 text-sm">Belum ada ulasan untuk event ini.</p>
+                    @endforelse
+                </div>
             </div>
         </div>
     </main>

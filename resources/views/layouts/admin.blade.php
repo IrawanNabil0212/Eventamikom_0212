@@ -48,6 +48,12 @@
                       {{ request()->routeIs('admin.transactions.*') ? 'bg-indigo-800 text-white shadow-sm' : 'hover:bg-indigo-800/50 hover:text-white text-indigo-200' }}">
                 Kelola Transaksi
             </a>
+
+            <a href="{{ route('admin.organizations.index') }}"
+               class="flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition
+                      {{ request()->routeIs('admin.organizations.*') ? 'bg-indigo-800 text-white shadow-sm' : 'hover:bg-indigo-800/50 hover:text-white text-indigo-200' }}">
+                Kelola Penyelenggara
+            </a>
         </nav>
 
         <div class="pt-6 border-t border-indigo-800/50">

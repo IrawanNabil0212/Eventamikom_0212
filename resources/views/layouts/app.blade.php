@@ -14,15 +14,51 @@
 <body class="bg-slate-50 text-slate-900">
 
     <nav class="glass sticky top-0 z-40 px-8 py-4 border-b border-white/20 shadow-sm flex items-center justify-between">
-    <div class="flex items-center gap-2">
-        <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-bold text-xl">AH</div>
-        <span class="text-xl font-bold tracking-tight">AmikomEventHub</span>
-    </div>
-    <div class="hidden md:flex gap-8 font-medium">
-        <a href="{{ route('home') }}" class="text-indigo-600">Jelajahi</a>
-        <a href="{{ route('categories.index') }}" class="hover:text-indigo-600 transition">Kategori</a>
-        <a href="#" class="hover:text-indigo-600 transition">Tentang Kami</a>
-    </div>
+        <div class="flex items-center gap-2">
+            <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-bold text-xl">AH</div>
+            <span class="text-xl font-bold tracking-tight">AmikomEventHub</span>
+        </div>
+
+        <div class="hidden md:flex items-center gap-8 font-medium">
+            <a href="{{ route('home') }}" class="text-indigo-600">Jelajahi</a>
+            <a href="{{ route('categories.index') }}" class="hover:text-indigo-600 transition">Kategori</a>
+            <a href="#" class="hover:text-indigo-600 transition">Tentang Kami</a>
+            <a href="{{ route('organizer.register') }}" class="text-sm text-slate-500 hover:text-indigo-600 transition">
+                Jadi Penyelenggara
+            </a>
+
+            @auth
+            {{-- Dropdown akun: klik avatar untuk buka menu Tiket Saya / Ganti Akun / Logout --}}
+            <div class="relative">
+                <button type="button" onclick="document.getElementById('user-menu').classList.toggle('hidden')"
+                        class="flex items-center gap-2 pl-3 border-l border-slate-200">
+                    <img src="{{ auth()->user()->avatar ?? 'https://ui-avatars.com/api/?name='.urlencode(auth()->user()->name) }}"
+                         alt="avatar" class="w-8 h-8 rounded-full border" title="{{ auth()->user()->email }}">
+                    <span class="text-sm font-medium">{{ auth()->user()->name }}</span>
+                    <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+
+                <div id="user-menu" class="hidden absolute right-0 mt-3 w-52 bg-white rounded-2xl border border-slate-100 shadow-xl py-2 z-50">
+                    <a href="{{ route('tickets.my') }}" class="block px-4 py-2.5 text-sm hover:bg-slate-50 transition">
+                        Tiket Saya
+                    </a>
+                    <a href="{{ route('buyer.google.redirect', ['redirect_to' => url()->current()]) }}"
+                       class="block px-4 py-2.5 text-sm hover:bg-slate-50 transition">
+                        Ganti Akun
+                    </a>
+                    <div class="border-t border-slate-100 my-1"></div>
+                    <form method="POST" action="{{ route('buyer.logout') }}">
+                        @csrf
+                        <button type="submit" class="w-full text-left px-4 py-2.5 text-sm text-rose-600 hover:bg-rose-50 transition">
+                            Logout
+                        </button>
+                    </form>
+                </div>
+            </div>
+            @endauth
+        </div>
     </nav>
 
     <main>
@@ -57,6 +93,19 @@
             &copy; 2024 AmikomEventHub. Built with Laravel & Tailwind CSS.
         </div>
     </footer>
+
+    {{-- Tutup dropdown akun kalau klik di luar area menu --}}
+    <script>
+        document.addEventListener('click', function (event) {
+            const menu = document.getElementById('user-menu');
+            if (!menu) return;
+            const button = event.target.closest('button');
+            const isToggleButton = button && button.getAttribute('onclick')?.includes('user-menu');
+            if (!isToggleButton && !menu.contains(event.target)) {
+                menu.classList.add('hidden');
+            }
+        });
+    </script>
 
 </body>
 </html>

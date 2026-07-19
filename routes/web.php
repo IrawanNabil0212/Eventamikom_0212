@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\OrganizationProfileController;
 
 // ===== Admin Area Controllers =====
 use App\Http\Controllers\Admin\AuthController;
@@ -15,12 +17,15 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\PartnerController;
 use App\Http\Controllers\Admin\TransactionController;
 use App\Http\Controllers\BuyerAuthController;
+use App\Http\Controllers\Organizer\OrganizerAuthController;
+use App\Http\Controllers\Admin\OrganizationApprovalController;
+use App\Http\Controllers\Organizer\OrganizerDashboardController;
+use App\Http\Controllers\Organizer\OrganizerEventController;
+
 /*
 |--------------------------------------------------------------------------
 | Satpam Pengarah Rute (Fallback Middleware Auth)
 |--------------------------------------------------------------------------
-| Baris ini bertugas menangkap user tidak dikenal yang mencoba masuk ke
-| dashboard, lalu mengarahkannya ke halaman login admin secara halus.
 */
 Route::get('/login', function () {
     return redirect()->route('admin.login');
@@ -33,40 +38,76 @@ Route::get('/login', function () {
 |--------------------------------------------------------------------------
 */
 
-// Homepage
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
-// Halaman Statis
 Route::get('/tentang', fn() => view('about'))->name('about');
 Route::get('/kontak', fn() => view('contact'))->name('contact');
 Route::get('/profil', fn() => view('profil'))->name('profil');
 Route::get('/katalog', fn() => view('katalog'))->name('katalog');
 Route::get('/bantuan', fn() => view('bantuan'))->name('help');
 
-// Event Publik
 Route::get('/event/{id}', [EventController::class, 'show'])->name('events.show');
 Route::get('/my-ticket', [EventController::class, 'ticket'])->name('tickets.my');
 
-// ===== Rute Checkout (Diperbarui) =====
 Route::get('/checkout/{event}', [CheckoutController::class, 'create'])->name('checkout.create');
 Route::post('/checkout/{event}', [CheckoutController::class, 'store'])->name('checkout.store');
 
-//Payment
 Route::get('/payment/success/{order_id}', [CheckoutController::class, 'success'])->name('checkout.success');
 Route::get('/payment/{order_id}', [CheckoutController::class, 'payment'])->name('checkout.payment');
-// Kategori Publik
+
 Route::get('/kategori', [HomeController::class, 'categories'])->name('categories.index');
 Route::get('/kategori/{slug}', [HomeController::class, 'category'])->name('category.show');
 
+// ----------------------------------------------------
 // Login Instan via Google (SSO) - untuk Buyer
+// ----------------------------------------------------
 Route::get('/auth/google/redirect', [BuyerAuthController::class, 'redirectToGoogle'])
     ->name('buyer.google.redirect');
- 
+
 Route::get('/auth/google/callback', [BuyerAuthController::class, 'handleGoogleCallback'])
     ->name('buyer.google.callback');
- 
+
 Route::post('/logout', [BuyerAuthController::class, 'logout'])
     ->name('buyer.logout');
+
+// ----------------------------------------------------
+// Profil Publik Organizer (rekam jejak rating & review)
+// ----------------------------------------------------
+Route::get('/penyelenggara/{slug}', [OrganizationProfileController::class, 'show'])
+    ->name('organizations.public.show');
+
+// ----------------------------------------------------
+// Rating & Review (wajib login sebagai buyer)
+// ----------------------------------------------------
+Route::post('/tickets/{transaction}/review', [ReviewController::class, 'store'])
+    ->middleware('auth')
+    ->name('reviews.store');
+
+
+// ----------------------------------------------------
+// Organizer (Kepanitiaan/HIMA)
+// ----------------------------------------------------
+Route::prefix('organizer')->name('organizer.')->group(function () {
+
+    // --- Zona luar: belum login ---
+    Route::get('register', [OrganizerAuthController::class, 'showRegister'])->name('register');
+    Route::post('register', [OrganizerAuthController::class, 'register'])->name('register.store');
+    Route::get('login', [OrganizerAuthController::class, 'showLogin'])->name('login');
+    Route::post('login', [OrganizerAuthController::class, 'login'])->name('login.post');
+
+    // --- Perlu login, tapi TIDAK perlu status approved ---
+    Route::middleware(['auth'])->group(function () {
+        Route::get('pending', [OrganizerAuthController::class, 'pending'])->name('pending');
+        Route::post('logout', [OrganizerAuthController::class, 'logout'])->name('logout');
+    });
+
+    // --- Zona dalam: WAJIB status approved (dicek OrganizerMiddleware) ---
+    Route::middleware(['auth', 'organizer'])->group(function () {
+        Route::get('dashboard', [OrganizerDashboardController::class, 'index'])->name('dashboard');
+        Route::resource('events', OrganizerEventController::class)->except(['show']);
+    });
+});
+
 
 /*
 |--------------------------------------------------------------------------
@@ -87,22 +128,20 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // ZONA DALAM: Terkunci Gembok Middleware
     // ----------------------------------------------------
     Route::middleware(['auth', 'admin'])->group(function () {
-        
-        // Dashboard
+
         Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-        // // Transaksi 
-        // Route::get('transactions', [TransactionController::class, 'index'])->name('transactions');
-        //transactions
         Route::get('transactions', [\App\Http\Controllers\Admin\TransactionController::class, 'index'])->name('transactions.index');
 
-        // CRUD Resources Admin
         Route::resource('events', AdminEventController::class);
         Route::resource('categories', CategoryController::class);
         Route::resource('partners', PartnerController::class);
 
-        
-        
+        Route::get('organizations', [OrganizationApprovalController::class, 'index'])->name('organizations.index');
+        Route::get('organizations/{organization}', [OrganizationApprovalController::class, 'show'])->name('organizations.show');
+        Route::post('organizations/{organization}/approve', [OrganizationApprovalController::class, 'approve'])->name('organizations.approve');
+        Route::post('organizations/{organization}/reject', [OrganizationApprovalController::class, 'reject'])->name('organizations.reject');
+
     });
 
 });
