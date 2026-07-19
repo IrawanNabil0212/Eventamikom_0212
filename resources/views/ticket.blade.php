@@ -33,6 +33,30 @@
                 </span>
             </div>
 
+            {{-- QR Code untuk check-in di lokasi acara.
+                 Hanya tampil kalau tiket sudah lunas (status success).
+                 Isi QR = order_id, dipakai OrganizerCheckinController buat validasi kehadiran. --}}
+            @if($transaction->status === 'success')
+            <div class="mt-5 pt-5 border-t border-slate-100 flex flex-col items-center text-center">
+                @if($transaction->checked_in_at)
+                    <span class="inline-block px-4 py-1.5 rounded-full text-xs font-bold bg-indigo-100 text-indigo-700 mb-3">
+                        ✓ Sudah check-in pada {{ $transaction->checked_in_at->translatedFormat('d M Y, H:i') }}
+                    </span>
+                @else
+                    <p class="text-xs text-slate-400 mb-3">Tunjukkan QR Code ini ke panitia saat check-in di lokasi acara</p>
+                    <div class="p-3 bg-white border border-slate-200 rounded-2xl inline-block">
+                        {!! QrCode::size(160)->generate($transaction->order_id) !!}
+                    </div>
+                @endif
+
+                @if($transaction->certificate_sent_at)
+                    <p class="text-xs text-green-600 font-semibold mt-3">
+                        📄 Sertifikat kehadiran sudah dikirim ke {{ $transaction->customer_email }}
+                    </p>
+                @endif
+            </div>
+            @endif
+
             {{-- Kalau sudah pernah review, tampilkan review-nya --}}
             @if($transaction->review)
             <div class="mt-5 pt-5 border-t border-slate-100">

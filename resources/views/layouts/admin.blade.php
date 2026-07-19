@@ -54,6 +54,12 @@
                       {{ request()->routeIs('admin.organizations.*') ? 'bg-indigo-800 text-white shadow-sm' : 'hover:bg-indigo-800/50 hover:text-white text-indigo-200' }}">
                 Kelola Penyelenggara
             </a>
+
+            <a href="{{ route('admin.checkin.index') }}"
+               class="flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition
+                      {{ request()->routeIs('admin.checkin.*') ? 'bg-indigo-800 text-white shadow-sm' : 'hover:bg-indigo-800/50 hover:text-white text-indigo-200' }}">
+                Check-in Peserta
+            </a>
         </nav>
 
         <div class="pt-6 border-t border-indigo-800/50">

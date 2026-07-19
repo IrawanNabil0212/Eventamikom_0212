@@ -7,6 +7,7 @@ use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class CheckoutController extends Controller
 {
@@ -40,6 +41,20 @@ class CheckoutController extends Controller
             return back()->with('error', 'Mohon maaf, tiket untuk acara ini sudah habis.');
         }
 
+        // ====================================================================
+        // BYPASS TRANSAKSI UNTUK EVENT GRATIS
+        // ====================================================================
+        // Kalau harga tiket Rp 0, TIDAK PERLU sama sekali lewat Midtrans -
+        // tidak ada uang yang perlu dibayar, jadi langsung ditandai sukses,
+        // stok langsung dikurangi saat itu juga, dan buyer langsung
+        // diarahkan ke halaman sukses (E-Ticket langsung "terbit").
+        if ($event->price == 0) {
+            return $this->handleFreeEvent($request, $event);
+        }
+
+        // ====================================================================
+        // EVENT BERBAYAR: alur normal lewat Midtrans seperti biasa
+        // ====================================================================
         $orderId    = 'TRX-' . time() . '-' . Str::random(5);
         $totalPrice = $event->price + 5000;
 
@@ -82,6 +97,53 @@ class CheckoutController extends Controller
         }
     }
 
+    /**
+     * Alur khusus event gratis: skip Midtrans total, langsung sukses.
+     *
+     * Tetap pakai DB::transaction() + lockForUpdate() supaya aman kalau
+     * ada 2 orang klaim tiket gratis TERAKHIR di detik yang sama - tanpa
+     * ini, keduanya bisa sama-sama "lolos" cek stok sebelum salah satu
+     * sempat mengurangi duluan (overselling), sama seperti prinsip race
+     * condition yang perlu dijaga di alur berbayar.
+     */
+    private function handleFreeEvent(Request $request, Event $event)
+    {
+        $transaction = null;
+        $errorMessage = null;
+
+        DB::transaction(function () use ($event, $request, &$transaction, &$errorMessage) {
+            $lockedEvent = Event::where('id', $event->id)->lockForUpdate()->first();
+
+            if (!$lockedEvent || $lockedEvent->stock <= 0) {
+                $errorMessage = 'Mohon maaf, tiket gratis untuk acara ini sudah habis.';
+                return;
+            }
+
+            $orderId = 'TRX-' . time() . '-' . Str::random(5);
+
+            $transaction = Transaction::create([
+                'event_id'       => $lockedEvent->id,
+                'user_id'        => Auth::id(),
+                'order_id'       => $orderId,
+                'customer_name'  => $request->customer_name,
+                'customer_email' => $request->customer_email,
+                'customer_phone' => $request->customer_phone,
+                'total_price'    => 0,
+                'status'         => 'success', // langsung sukses, tidak ada pembayaran yang ditunggu
+            ]);
+
+            // Stok dikurangi SAAT ITU JUGA, bukan lewat webhook/Midtrans
+            $lockedEvent->decrement('stock');
+        });
+
+        if ($errorMessage) {
+            return back()->with('error', $errorMessage);
+        }
+
+        return redirect()->route('checkout.success', $transaction->order_id)
+            ->with('success', 'Tiket gratis berhasil diklaim!');
+    }
+
     public function payment($order_id)
     {
         $categories  = \App\Models\Category::all();
@@ -94,6 +156,12 @@ class CheckoutController extends Controller
         $categories  = \App\Models\Category::all();
         $transaction = Transaction::where('order_id', $order_id)->firstOrFail();
 
+        // Event gratis sudah 'success' sejak dibuat di handleFreeEvent(),
+        // tidak perlu cek status ke Midtrans sama sekali.
+        if ($transaction->total_price == 0) {
+            return view('checkout.success', compact('transaction', 'categories'));
+        }
+
         \Midtrans\Config::$serverKey    = env('MIDTRANS_SERVER_KEY');
         \Midtrans\Config::$isProduction = false;
 
@@ -105,12 +173,6 @@ class CheckoutController extends Controller
             }
 
             if (in_array($midtransStatus->transaction_status, ['capture', 'settlement'])) {
-
-                // PENTING: cuma kurangi stok kalau status SEBELUMNYA belum
-                // 'success' - supaya kalau halaman ini di-refresh berkali-kali
-                // (misal user reload atau balik lagi ke halaman success),
-                // stok tidak ikut berkurang berulang kali untuk 1 transaksi
-                // yang sama.
                 if ($transaction->status !== 'success') {
                     $transaction->update(['status' => 'success']);
 

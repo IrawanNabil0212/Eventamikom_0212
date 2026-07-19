@@ -71,6 +71,29 @@
 
 </div>
 
+{{-- ========================================================================
+     Grafik Pertumbuhan: Pengguna & Event (6 bulan terakhir)
+     ======================================================================== --}}
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
+
+    <div class="bg-white rounded-3xl border border-slate-100 shadow-sm p-6">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="font-black text-lg text-slate-800">Pertumbuhan Pengguna</h3>
+            <span class="text-xs font-bold text-slate-400 uppercase">6 Bulan Terakhir</span>
+        </div>
+        <canvas id="userGrowthChart" height="180"></canvas>
+    </div>
+
+    <div class="bg-white rounded-3xl border border-slate-100 shadow-sm p-6">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="font-black text-lg text-slate-800">Pertumbuhan Event</h3>
+            <span class="text-xs font-bold text-slate-400 uppercase">6 Bulan Terakhir</span>
+        </div>
+        <canvas id="eventGrowthChart" height="180"></canvas>
+    </div>
+
+</div>
+
 {{-- Konten Bawah: 2 Kolom --}}
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
@@ -158,5 +181,54 @@
     </div>
 
 </div>
+
+{{-- Chart.js via CDN - dipakai untuk render grafik pertumbuhan di atas --}}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<script>
+    const userGrowthLabels = @json($userGrowth['labels']);
+    const userGrowthData = @json($userGrowth['data']);
+    const eventGrowthLabels = @json($eventGrowth['labels']);
+    const eventGrowthData = @json($eventGrowth['data']);
+
+    new Chart(document.getElementById('userGrowthChart'), {
+        type: 'line',
+        data: {
+            labels: userGrowthLabels,
+            datasets: [{
+                label: 'Pengguna Baru',
+                data: userGrowthData,
+                borderColor: '#6366f1',
+                backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                fill: true,
+                tension: 0.3,
+                pointRadius: 4,
+                pointBackgroundColor: '#6366f1',
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+        }
+    });
+
+    new Chart(document.getElementById('eventGrowthChart'), {
+        type: 'bar',
+        data: {
+            labels: eventGrowthLabels,
+            datasets: [{
+                label: 'Event Baru',
+                data: eventGrowthData,
+                backgroundColor: '#10b981',
+                borderRadius: 8,
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+        }
+    });
+</script>
 
 @endsection

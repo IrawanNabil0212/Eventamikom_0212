@@ -34,6 +34,12 @@
                       {{ request()->routeIs('organizer.events.*') ? 'bg-emerald-800 text-white shadow-sm' : 'hover:bg-emerald-800/50 hover:text-white text-emerald-200' }}">
                 Kelola Event
             </a>
+
+            <a href="{{ route('organizer.checkin.index') }}"
+               class="flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition
+                      {{ request()->routeIs('organizer.checkin.*') ? 'bg-emerald-800 text-white shadow-sm' : 'hover:bg-emerald-800/50 hover:text-white text-emerald-200' }}">
+                Check-in Peserta
+            </a>
         </nav>
 
         <div class="pt-6 border-t border-emerald-800/50">

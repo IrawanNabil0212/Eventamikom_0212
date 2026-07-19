@@ -21,6 +21,8 @@ use App\Http\Controllers\Organizer\OrganizerAuthController;
 use App\Http\Controllers\Admin\OrganizationApprovalController;
 use App\Http\Controllers\Organizer\OrganizerDashboardController;
 use App\Http\Controllers\Organizer\OrganizerEventController;
+use App\Http\Controllers\Organizer\OrganizerCheckinController;
+use App\Http\Controllers\Admin\AdminCheckinController;
 
 /*
 |--------------------------------------------------------------------------
@@ -105,6 +107,13 @@ Route::prefix('organizer')->name('organizer.')->group(function () {
     Route::middleware(['auth', 'organizer'])->group(function () {
         Route::get('dashboard', [OrganizerDashboardController::class, 'index'])->name('dashboard');
         Route::resource('events', OrganizerEventController::class)->except(['show']);
+
+        // === Check-in Peserta ===
+        // PENTING: sengaja ditaruh DI DALAM blok middleware ['auth','organizer']
+        // ini (bukan di luar seperti sebelumnya) - supaya cuma organizer yang
+        // sudah login & approved yang bisa akses halaman check-in ini.
+        Route::get('checkin', [OrganizerCheckinController::class, 'index'])->name('checkin.index');
+        Route::post('checkin', [OrganizerCheckinController::class, 'store'])->name('checkin.store');
     });
 });
 
@@ -141,6 +150,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('organizations/{organization}', [OrganizationApprovalController::class, 'show'])->name('organizations.show');
         Route::post('organizations/{organization}/approve', [OrganizationApprovalController::class, 'approve'])->name('organizations.approve');
         Route::post('organizations/{organization}/reject', [OrganizationApprovalController::class, 'reject'])->name('organizations.reject');
+
+        // === Check-in Peserta (untuk event yang dibuat langsung oleh Admin) ===
+        Route::get('checkin', [AdminCheckinController::class, 'index'])->name('checkin.index');
+        Route::post('checkin', [AdminCheckinController::class, 'store'])->name('checkin.store');
 
     });
 

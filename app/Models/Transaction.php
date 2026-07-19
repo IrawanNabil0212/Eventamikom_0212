@@ -16,6 +16,14 @@ class Transaction extends Model
         'total_price',
         'status',
         'snap_token',
+        'checked_in_at',
+        'certificate_path',
+        'certificate_sent_at',
+    ];
+
+    protected $casts = [
+        'checked_in_at' => 'datetime',
+        'certificate_sent_at' => 'datetime',
     ];
 
     public function event()
@@ -23,20 +31,11 @@ class Transaction extends Model
         return $this->belongsTo(Event::class);
     }
 
-    /**
-     * Buyer yang login (via Google SSO) yang melakukan transaksi ini.
-     * Nullable karena transaksi lama sebelum SSO ada tidak punya ini.
-     */
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    /**
-     * Review yang sudah dibuat untuk transaksi ini (kalau ada).
-     * Dipakai untuk cek "apakah tiket ini sudah direview?" di halaman
-     * Tiket Saya, tanpa perlu query terpisah.
-     */
     public function review()
     {
         return $this->hasOne(Review::class);
