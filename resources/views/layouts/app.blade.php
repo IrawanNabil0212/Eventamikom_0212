@@ -4,6 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AmikomEventHub - Temukan Event Seru!</title>
+
+    {{-- ================================================================
+         PWA (Progressive Web App)
+         ================================================================ --}}
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#4f46e5">
+    <link rel="apple-touch-icon" href="/icons/icon-192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="EventHub">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -42,17 +53,17 @@
 
                 <div id="user-menu" class="hidden absolute right-0 mt-3 w-52 bg-white rounded-2xl border border-slate-100 shadow-xl py-2 z-50">
                     <a href="{{ route('tickets.my') }}" class="block px-4 py-2.5 text-sm hover:bg-slate-50 transition">
-                        Tiket Saya
+                        🎟️ Tiket Saya
                     </a>
                     <a href="{{ route('buyer.google.redirect', ['redirect_to' => url()->current()]) }}"
                        class="block px-4 py-2.5 text-sm hover:bg-slate-50 transition">
-                        Ganti Akun
+                        🔄 Ganti Akun
                     </a>
                     <div class="border-t border-slate-100 my-1"></div>
                     <form method="POST" action="{{ route('buyer.logout') }}">
                         @csrf
                         <button type="submit" class="w-full text-left px-4 py-2.5 text-sm text-rose-600 hover:bg-rose-50 transition">
-                            Logout
+                            🚪 Logout
                         </button>
                     </form>
                 </div>
@@ -105,6 +116,19 @@
                 menu.classList.add('hidden');
             }
         });
+    </script>
+
+    {{-- Registrasi Service Worker untuk fitur PWA (install ke homescreen,
+         loading lebih cepat via cache, fallback halaman offline) --}}
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function () {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .catch(function (err) {
+                        console.log('Service Worker gagal didaftarkan:', err);
+                    });
+            });
+        }
     </script>
 
 </body>

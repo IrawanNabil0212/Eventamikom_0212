@@ -15,13 +15,22 @@ class Transaction extends Model
         'customer_phone',
         'total_price',
         'status',
-        'snap_token',
+        'expires_at',
         'checked_in_at',
         'certificate_path',
         'certificate_sent_at',
+        'snap_token',
     ];
 
+    /**
+     * PENTING: tanpa $casts ini, kolom timestamp seperti expires_at dan
+     * checked_in_at akan tersimpan sebagai TEKS biasa dari database,
+     * BUKAN objek Carbon - akibatnya method seperti ->format(), ->gt(),
+     * ->addMinutes() akan ERROR ("Call to a member function ... on
+     * string") begitu dipanggil.
+     */
     protected $casts = [
+        'expires_at' => 'datetime',
         'checked_in_at' => 'datetime',
         'certificate_sent_at' => 'datetime',
     ];
