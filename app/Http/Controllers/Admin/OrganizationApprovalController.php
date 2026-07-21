@@ -8,10 +8,6 @@ use Illuminate\Http\Request;
 
 class OrganizationApprovalController extends Controller
 {
-    /**
-     * Tampilkan daftar semua organizer (pending, approved, rejected)
-     * untuk direview oleh Superadmin.
-     */
     public function index(Request $request)
     {
         $status = $request->query('status', 'pending');
