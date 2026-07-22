@@ -48,3 +48,6 @@ https://eventamikom0212-production.up.railway.app/admin/transactions
 
 Bukti Praktikum:
 https://drive.google.com/drive/folders/1cYH2ouwJa5IOMfG08kicIoW3egi2GagB?usp=sharing
+
+Web Aktif :
+https://eventamikom0212.free.nf/
