@@ -57,6 +57,17 @@ Route::post('/checkout/{event}', [CheckoutController::class, 'store'])->name('ch
 Route::get('/payment/success/{order_id}', [CheckoutController::class, 'success'])->name('checkout.success');
 Route::get('/payment/{order_id}', [CheckoutController::class, 'payment'])->name('checkout.payment');
 
+// ----------------------------------------------------
+// Webhook Midtrans (Payment Notification)
+// ----------------------------------------------------
+// PENTING: route ini dipanggil oleh SERVER Midtrans, bukan oleh
+// browser user, jadi tidak boleh dilindungi CSRF (sudah dikecualikan
+// di bootstrap/app.php). Fungsinya: kalau user membatalkan pembayaran
+// atau transaksi expired dari sisi Midtrans, stok tiket dikembalikan
+// secara real-time (tidak perlu menunggu cron tickets:release-expired).
+Route::post('/midtrans/notification', [CheckoutController::class, 'notification'])
+    ->name('midtrans.notification');
+
 Route::get('/kategori', [HomeController::class, 'categories'])->name('categories.index');
 Route::get('/kategori/{slug}', [HomeController::class, 'category'])->name('category.show');
 

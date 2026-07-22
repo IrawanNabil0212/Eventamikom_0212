@@ -53,17 +53,17 @@
 
                 <div id="user-menu" class="hidden absolute right-0 mt-3 w-52 bg-white rounded-2xl border border-slate-100 shadow-xl py-2 z-50">
                     <a href="{{ route('tickets.my') }}" class="block px-4 py-2.5 text-sm hover:bg-slate-50 transition">
-                        🎟️ Tiket Saya
+                        Tiket Saya
                     </a>
                     <a href="{{ route('buyer.google.redirect', ['redirect_to' => url()->current()]) }}"
                        class="block px-4 py-2.5 text-sm hover:bg-slate-50 transition">
-                        🔄 Ganti Akun
+                        Ganti Akun
                     </a>
                     <div class="border-t border-slate-100 my-1"></div>
                     <form method="POST" action="{{ route('buyer.logout') }}">
                         @csrf
                         <button type="submit" class="w-full text-left px-4 py-2.5 text-sm text-rose-600 hover:bg-rose-50 transition">
-                            🚪 Logout
+                            Logout
                         </button>
                     </form>
                 </div>

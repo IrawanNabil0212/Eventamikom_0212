@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 use App\Models\Transaction;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
@@ -11,10 +12,7 @@ use Illuminate\Support\Facades\DB;
 
 class CheckoutController extends Controller
 {
-    /**
-     * Berapa menit batas waktu pembayaran sebelum reservasi tiket
-     * dilepas otomatis. Sesuai spesifikasi tugas: 15 menit.
-     */
+  
     private const RESERVATION_MINUTES = 15;
 
     public function create(Event $event)
@@ -23,6 +21,11 @@ class CheckoutController extends Controller
             return redirect()->route('buyer.google.redirect', [
                 'redirect_to' => route('checkout.create', $event->id),
             ]);
+        }
+
+        if (Carbon::parse($event->date)->isPast()) {
+            return redirect()->route('home')
+                ->with('error', 'Mohon maaf, acara ini sudah berlalu dan tidak bisa dipesan lagi.');
         }
 
         $categories = \App\Models\Category::all();
@@ -35,6 +38,11 @@ class CheckoutController extends Controller
             return redirect()->route('buyer.google.redirect', [
                 'redirect_to' => route('checkout.create', $event->id),
             ]);
+        }
+
+    
+        if (Carbon::parse($event->date)->isPast()) {
+            return back()->with('error', 'Mohon maaf, acara ini sudah berlalu dan tidak bisa dipesan lagi.');
         }
 
         $request->validate([
@@ -54,20 +62,6 @@ class CheckoutController extends Controller
             return $this->handleFreeEvent($request, $event);
         }
 
-        // ====================================================================
-        // EVENT BERBAYAR: RESERVE STOK dengan pengaman Race Condition
-        // ====================================================================
-        // Kenapa perlu DB::transaction() + lockForUpdate()?
-        // Bayangkan 2 pembeli klik "Checkout" di detik yang SAMA PERSIS,
-        // dan stok tiket cuma tersisa 1. Tanpa row locking, kedua request
-        // bisa sama-sama membaca stok = 1 (masih dianggap tersedia) SEBELUM
-        // salah satunya sempat mengurangi ke 0 - akibatnya tiket "terjual 2x"
-        // padahal stok cuma 1 (overselling).
-        //
-        // lockForUpdate() mengunci baris event ini di level database selama
-        // transaksi berjalan, sehingga request ke-2 WAJIB menunggu request
-        // pertama selesai (commit) dulu, baru boleh baca ulang stok terbaru -
-        // request ke-2 otomatis akan lihat stok sudah 0 dan gagal dengan aman.
         $transaction = null;
         $errorMessage = null;
 
@@ -230,5 +224,67 @@ class CheckoutController extends Controller
         }
 
         return view('checkout.success', compact('transaction', 'categories'));
+    }
+
+    /**
+     * Webhook Payment Notification dari Midtrans.
+     *
+     * Dipanggil otomatis oleh SERVER Midtrans (bukan oleh browser user)
+     * setiap kali status transaksi berubah - termasuk saat pembayaran
+     * dibatalkan (cancel), kadaluarsa dari sisi Midtrans (expire), atau
+     * ditolak (deny). Tanpa ini, stok yang sudah di-reserve hanya akan
+     * kembali lewat cron tickets:release-expired (menunggu penuh 15 menit),
+     * bukan seketika saat user membatalkan pembayaran di popup Snap.
+     *
+     * PENTING: route ini dikecualikan dari CSRF protection di
+     * bootstrap/app.php, karena request datang dari server Midtrans,
+     * bukan dari form/browser yang punya CSRF token.
+     */
+    public function notification(Request $request)
+    {
+        \Midtrans\Config::$serverKey    = env('MIDTRANS_SERVER_KEY');
+        \Midtrans\Config::$isProduction = false;
+
+        try {
+            $notif = new \Midtrans\Notification();
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Notifikasi tidak valid: ' . $e->getMessage()], 400);
+        }
+
+        $transaction = Transaction::where('order_id', $notif->order_id)->first();
+
+        if (!$transaction) {
+            return response()->json(['message' => 'Transaksi tidak ditemukan'], 404);
+        }
+
+        // Kalau status transaksi sudah final (bukan 'Pending' lagi), jangan
+        // diproses ulang - mencegah stok bertambah dobel kalau Midtrans
+        // mengirim notifikasi yang sama lebih dari sekali.
+        if ($transaction->status !== 'Pending') {
+            return response()->json(['message' => 'Transaksi sudah diproses sebelumnya, notifikasi diabaikan.']);
+        }
+
+        $status = $notif->transaction_status;
+
+        if (in_array($status, ['cancel', 'expire', 'deny'])) {
+            DB::transaction(function () use ($transaction, $status) {
+                $transaction->update([
+                    'status'     => $status,
+                    'expires_at' => null,
+                ]);
+
+                if ($transaction->event) {
+                    $transaction->event()->increment('stock');
+                }
+            });
+
+        } elseif (in_array($status, ['capture', 'settlement'])) {
+            $transaction->update([
+                'status'     => 'success',
+                'expires_at' => null,
+            ]);
+        }
+
+        return response()->json(['message' => 'Notifikasi berhasil diproses']);
     }
 }
